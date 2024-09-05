@@ -1,4 +1,5 @@
 <template>
+<div style="position: relative;">
   <transition :name="!transitionTime ? '' : 'keyboardTransition'">
     <div
       v-show="show"
@@ -7,7 +8,7 @@
       :style="{ transition: `all ${transitionTime}` }"
     >
       <div
-        v-if="mode === 'cn' && !showDiction && cn_input?.length"
+        v-if="mode === 'cn' && !showDiction && cn_input && cn_input.length"
         class="pinyin"
       >
         <div>
@@ -15,7 +16,7 @@
         </div>
       </div>
       <div
-        v-if="mode === 'cn' && !showDiction && cn_input?.length"
+        v-if="mode === 'cn' && !showDiction && cn_input && cn_input.length"
         class="select-list"
         :style="{ height: cut_cn_list.length ? '' : '40px' }"
       >
@@ -278,6 +279,7 @@
       </div>
     </div>
   </transition>
+</div>
 </template>
 
 <script>
@@ -317,7 +319,8 @@ export default {
     // };
     let promiseList = [];
     if (this.singleDict) {
-      const promise = import("@/" + this.singleDict).then((res) => {
+      const promise = import("@/dict/baseDict.json")//import("@/" + this.singleDict)
+      .then((res) => {
         dict = res;
         Object.freeze(dict);
         // this.worker.postMessage({
@@ -330,7 +333,8 @@ export default {
       promiseList.push(promise);
     }
     if (this.manyDict) {
-      const promise = import("@/" + this.manyDict).then((res) => {
+      const promise = import("@/dict/chowder.json")//import("@/" + this.manyDict)
+      .then((res) => {
         doubleSpell = res;
         Object.freeze(doubleSpell);
         // this.worker.postMessage({
@@ -1160,8 +1164,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.keyUp {
-}
 .keyDown {
   background: #d0d0d0;
 }
@@ -1193,12 +1195,11 @@ i {
   margin-top: 0px;
 }
 .my-keyboard {
-  position: fixed;
-  left: 0px;
-  z-index: 10;
-  bottom: 0px;
-  width: 100%;
-  // min-width: 1024px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -325px;
+  width: 55%;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1215,7 +1216,6 @@ i {
     }
   }
   .pinyin {
-    // height: 30px;
     background: #fff;
     border: 1px solid rgba(209, 209, 209, 1);
     padding: 0 20px;
@@ -1227,7 +1227,7 @@ i {
     }
   }
   .select-list {
-    background: #fff;
+    background: #cdcdcd;
     border: 1px solid rgba(209, 209, 209, 1);
     border-top: none;
     padding: 0 20px;
@@ -1279,9 +1279,10 @@ i {
   }
 
   .main-keyboard {
-    padding: 0 14px;
+    border-radius: 10px;
+    padding: 10px 14px;
     background: #e6e6e6;
-    height: 305px;
+    height: 325px;
     .key {
       height: 50px;
       line-height: 50px;
@@ -1293,16 +1294,14 @@ i {
       vertical-align: middle;
       border-radius: 8px;
       margin-top: 8px;
-      box-shadow: 1px 1px 2px rgba(20, 20, 20, 0.3);
+      /* 立体键盘按钮 */
+      -webkit-box-shadow: 0 4px 0 #b2b2b2, 0 5px 10px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 3px 0 #b2b2b2, 0 4px 6px rgba(0, 0, 0, 0.7);
       margin-left: 10px;
       cursor: pointer;
       &:active {
-        background: #d0d0d0;
+        background-color: #d0d0d0;
       }
-
-      // & + .key {
-      //   margin-left: 10px;
-      // }
     }
 
     .number-box {
@@ -1330,7 +1329,6 @@ i {
       vertical-align: middle;
       .key {
         margin-left: 0px;
-        //margin-top: 20px;
         &:nth-of-type(1) {
           margin-top: 0px;
         }
@@ -1344,9 +1342,6 @@ i {
       width: 140px;
       color: #fff;
       background: #344a5d;
-      // &:active {
-      //   background: #728fa8;
-      // }
     }
     .key_hide {
       background: #d6d1d0;
@@ -1364,12 +1359,7 @@ i {
       }
     }
     .blue {
-      // color: #fff;
       width: 140px;
-      // background: #ff9213; // #344a5d;
-      &:active {
-        // background: #728fa8;
-      }
       .blue_default {
         font-size: 16px;
         font-weight: 500;
@@ -1379,7 +1369,7 @@ i {
       color: #fff;
       background: #f56c6c;
       &:active {
-        background: #f89e9e;
+        background-color: #f89e9e;
       }
     }
     .space {
@@ -1387,7 +1377,6 @@ i {
     }
   }
 }
-
 .no_del_box {
   .num {
     .number:nth-last-child(2) {
@@ -1451,7 +1440,6 @@ i {
       border-radius: 10px;
       .select_cn_main {
         display: flex;
-        // height: 100%;
         flex-wrap: wrap;
         .item {
           height: 20px;
@@ -1541,8 +1529,6 @@ i {
         padding-left: 0px;
         font-size: 15px;
       }
-    }
-    .case {
     }
     .space {
       width: 30%;
